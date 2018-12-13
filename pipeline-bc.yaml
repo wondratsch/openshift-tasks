@@ -33,7 +33,7 @@ spec:
                 }
                 stage('acknowledge test') {
                    steps {
-                      timeout(time: 3, unit: 'MINUTES') {
+                      timeout(time: 720, unit: 'MINUTES') {
                          input 'Ready for Test?'
                       }
                    }
@@ -52,7 +52,7 @@ spec:
                 }
                 stage('acknowledge prod') {
                    steps {
-                      timeout(time: 3, unit: 'MINUTES') {
+                      timeout(time: 720, unit: 'MINUTES') {
                          input 'Ready for prod?'
                       }
                    }
