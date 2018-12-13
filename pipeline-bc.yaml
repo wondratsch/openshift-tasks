@@ -10,12 +10,66 @@ spec:
   strategy:
     jenkinsPipelineStrategy:
       jenkinsfile: |-
-        node('maven') {
-            stage 'build'
-            openshiftBuild(buildConfig: 'tasks', showBuildLogs: 'true')
-
-            stage 'deploy'
-            openshiftDeploy(deploymentConfig: 'tasks')
+        pipeline {
+           agent any
+             stages {
+                stage('Build: Build Tasks') {
+                   steps {
+                      openshiftBuild bldCfg: 'openshift-tasks', namespace: 'tasks-build', showBuildLogs: 'true', verbose: 'false', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyBuild bldCfg: 'openshift-tasks', checkForTriggeredDeployments: 'false', namespace: 'tasks-build', verbose: 'false', waitTime: ''
+                   }
+                }
+                stage('Dev: Tag Image') {
+                   steps {
+                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-dev', namespace: 'tasks-build', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
+                   }
+                }
+                stage('Dev: Deploy new image') {
+                   steps {
+                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyService namespace: 'tasks-dev', svcName: 'openshift-tasks', verbose: 'false', retryCount: '5'
+                   }
+                }
+                stage('acknowledge test') {
+                   steps {
+                      timeout(time: 3, unit: 'MINUTES') {
+                         input 'Ready for Test?'
+                      }
+                   }
+                }
+                stage('Test: Tag Image') {
+                   steps {
+                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-test', namespace: 'tasks-dev', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
+                   }
+                }
+                stage('Test: Deploy new image') {
+                   steps {
+                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-test', verbose: 'false', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-test', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyService namespace: 'tasks-test', svcName: 'openshift-tasks', verbose: 'false', retryCount: '5'
+                   }
+                }
+                stage('acknowledge prod') {
+                   steps {
+                      timeout(time: 3, unit: 'MINUTES') {
+                         input 'Ready for prod?'
+                      }
+                   }
+                }
+                stage('Prod: Tag Image') {
+                   steps {
+                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-prod', namespace: 'tasks-test', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
+                   }
+                }
+                stage('Test: Deploy new image') {
+                   steps {
+                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyService namespace: 'tasks-prod', svcName: 'openshift-tasks', verbose: 'false', retryCount: '5'
+                   }
+                }
+            }
         }
     type: JenkinsPipeline
   triggers:
