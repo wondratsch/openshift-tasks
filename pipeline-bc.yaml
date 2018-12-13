@@ -62,7 +62,7 @@ spec:
                       openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-prod', namespace: 'tasks-test', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
                    }
                 }
-                stage('Test: Deploy new image') {
+                stage('Prod: Deploy new image') {
                    steps {
                       openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
                       openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
