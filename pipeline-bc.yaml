@@ -40,7 +40,7 @@ spec:
                 }
                 stage('Test: Tag Image') {
                    steps {
-                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-test', namespace: 'tasks-dev', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
+                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-test', namespace: 'tasks-build', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
                    }
                 }
                 stage('Test: Deploy new image') {
@@ -59,7 +59,7 @@ spec:
                 }
                 stage('Prod: Tag Image') {
                    steps {
-                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-prod', namespace: 'tasks-test', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
+                      openshiftTag alias: 'false', destStream: 'openshift-tasks', destTag: '${BUILD_NUMBER}', destinationAuthToken: '', destinationNamespace: 'tasks-prod', namespace: 'tasks-build', srcStream: 'openshift-tasks', srcTag: 'latest', verbose: 'false'
                    }
                 }
                 stage('Prod: Deploy new image') {
