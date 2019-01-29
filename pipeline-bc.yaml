@@ -27,7 +27,7 @@ spec:
                 stage('Dev: Deploy new image') {
                    steps {
                       openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-dev', verbose: 'false', waitTime: '', waitUnit: 'sec'
-                      openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
+                      openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-dev', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '30', waitUnit: 'sec'
                       openshiftVerifyService namespace: 'tasks-dev', svcName: 'openshift-tasks', verbose: 'false', retryCount: '5'
                    }
                 }
@@ -45,7 +45,7 @@ spec:
                 }
                 stage('Test: Deploy new image') {
                    steps {
-                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-test', verbose: 'false', waitTime: '', waitUnit: 'sec'
+                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-test', verbose: 'false', waitTime: '30', waitUnit: 'sec'
                       openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-test', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
                       openshiftVerifyService namespace: 'tasks-test', svcName: 'openshift-tasks', verbose: 'false', retryCount: '5'
                    }
@@ -64,7 +64,7 @@ spec:
                 }
                 stage('Prod: Deploy new image') {
                    steps {
-                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-prod', verbose: 'false', waitTime: '', waitUnit: 'sec'
+                      openshiftDeploy depCfg: 'openshift-tasks', namespace: 'tasks-prod', verbose: 'false', waitTime: '30', waitUnit: 'sec'
                       openshiftVerifyDeployment depCfg: 'openshift-tasks', namespace: 'tasks-prod', replicaCount: '1', verbose: 'false', verifyReplicaCount: 'true', waitTime: '', waitUnit: 'sec'
                       openshiftVerifyService namespace: 'tasks-prod', svcName: 'openshift-tasks', verbose: 'false', retryCount: '5'
                    }
